@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Select Parameters{% endblock %}
+
+{% block content %}
+
+<h2 class="h2_head">Select Parameters to Display</h2>
+
+<div class="controls">
+    <input
+        type="text"
+        id="searchInput"
+        class="search-box"
+        placeholder="Search parameters..."
+        onkeyup="filterParams()"
+    >
+
+    <button
+        type="button"
+        id="Uncheck"
+        onclick="unselectAll()"
+    >
+        Uncheck All
+    </button>
+</div>
+
+{% if descriptions %}
+<form method="POST" onsubmit="return validateSelection()">
+
+    <!-- DATA SESSION DURATION -->
+    <div class="session-box">
+        <label>Data Session Duration:</label>
+        <select name="session_time" required>
+            <option value="1"selected>1 minute</option>
+            <option value="5">5 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="20">20 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="60">60 minutes</option>
+            <option value="90">90 minutes</option>
+            <option value="120">120 minutes</option>
+        </select>
+    </div>
+
+    <!-- PARAMETERS LIST -->
+    <div class="param-container">
+        <div class="param-grid" id="paramGrid">
+            {% for desc in descriptions %}
+                <div class="param-item">
+                    <input
+                        type="checkbox"
+                        name="params"
+                        value="{{ desc }}"
+                        class="param-checkbox"
+                    >
+                    <label>{{ desc }}</label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+        <button
+            type="submit"
+            name="action"
+            value="dashboard"
+            class="btn danger"
+        >
+            Dashboard
+        </button>
+
+        <button
+            type="submit"
+            name="action"
+            value="graph"
+            class="btn success"
+        >
+            Graph
+        </button>
+    </div>
+</form>
+{% else %}
+<p>No parameters found in file.</p>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.h2_head {
+    text-align: center;
+    color: khaki;
+    margin-top: 10px;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.search-box {
+    padding: 10px 14px;
+    width: 300px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+}
+
+#Uncheck {
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background-color: #555;
+    color: white;
+    font-weight: bold;
+}
+
+/* SESSION BOX */
+.session-box {
+    margin: 15px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.session-box label {
+    color: #9da7ff;
+    font-weight: bold;
+}
+
+.session-box select {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: none;
+}
+
+/* PARAMETERS GRID */
+.param-container {
+    height: calc(100vh - 330px);
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.param-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.param-container::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+}
+
+.param-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 40px;
+}
+
+.param-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+}
+
+/* ACTION BUTTONS */
+.action-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.btn {
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+}
+
+.btn.danger {
+    background-color: #e6004c;
+}
+
+.btn.success {
+    background-color: #2be34d;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterParams() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const items = document.querySelectorAll(".param-item");
+
+    items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        item.style.display = text.includes(input) ? "flex" : "none";
+    });
+}
+
+function unselectAll() {
+    document
+        .querySelectorAll(".param-checkbox")
+        .forEach(cb => cb.checked = false);
+}
+
+function validateSelection() {
+    const checked = document.querySelectorAll(".param-checkbox:checked");
+
+    if (checked.length === 0) {
+        alert("Please select at least one parameter.");
+        return false;
+    }
+
+    return true;
+}
+</script>
+{% endblock %}
