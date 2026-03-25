@@ -3,3 +3,4 @@ Coil	ReadWrite	0	0	0x0000	1	SetBeeper(0=off/1=on)
 Coil	ReadWrite	0	1	0x0001	1	QuitRelay(0=disable/1=enable)
 Coil	ReadWrite	0	2	0x0002	1	UnitMsgRelay(0=disable/1=enable)
 Coil	ReadWrite	0	3	0x0003	1	QuitUnit(0=no/1=yes)
+
