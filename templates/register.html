@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Rittal Portal</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #1c1f24, #0f1115);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        /* ---------- REGISTER BOX ---------- */
+        .register-box {
+            background-color: #000;
+            width: 420px;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        .register-box h1 {
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #b0b3b8;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
+            background: transparent;
+            border: 1px solid #3a3d42;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+
+        input::placeholder {
+            color: #8e9196;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #e6004c;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #e6004c;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background-color: #c40041;
+        }
+
+        .links {
+            margin-top: 18px;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #8aa4ff;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+    color: #ff4d4d;
+    font-size: 13px;
+    text-align: left;
+    margin-top: -10px;
+    margin-bottom: 12px;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="register-box">
+    <h1>Create Account</h1>
+    <p class="subtitle">
+        Register to access the Rittal Portal
+    </p>
+    
+    <form action="/register" method="POST">
+    <input type="text" name="name" placeholder="User name" required>
+
+    <input type="email" name="email" placeholder="Email address" required>
+
+    <!-- ERROR MESSAGE BELOW EMAIL FIELD -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        {% if category == "register_error" %}
+          <div class="error-message">
+            {{ message }}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endwith %}
+
+    <input type="password" name="password" placeholder="Password" required>
+
+    <button type="submit">Register</button>
+</form>
+
+    <div class="links">
+        Already have an account?
+        <a href="/login">Login</a>
+    </div>
+</div>
+
+</body>
+</html>

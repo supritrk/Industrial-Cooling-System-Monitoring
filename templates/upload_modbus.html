@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Modbus Map{% endblock %}
+
+{% block content %}
+<div class="upload-wrapper">
+    <div class="upload-box">
+        <h2>Upload Modbus Map</h2>
+        <p class="subtitle">Upload CSV or CMC3 file</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="modbus_file" required>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    {% if category == "upload_error" %}
+      <div class="error-message">
+        {{ message }}
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endwith %}
+            <br><br>
+            <button type="submit">Upload & Continue</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    /*for invalid file  */
+.error-message {
+    color: #ff4d4d;
+    font-size: 13px;
+    margin-top: 6px;
+}
+.upload-wrapper {
+    height: calc(100vh - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-box {
+    background: #000;
+    padding: 40px;
+    width: 420px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+}
+
+.upload-box h2 {
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #b0b3b8;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #3a3d42;
+    border-radius: 6px;
+    color: white;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: #e6004c;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #c40041;
+}
+</style>
+{% endblock %}

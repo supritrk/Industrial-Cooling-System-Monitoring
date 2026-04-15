@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Live Graph{% endblock %}
+
+{% block content %}
+
+<h2 class="page-title">Live Parameter Graph</h2>
+
+<div class="chart-wrapper">
+    <canvas id="myChart" height="300"></canvas>
+</div>
+
+<div class="action-buttons">
+    <button class="btn secondary">
+        <a href="/select-parameters">Back to Select</a>
+    </button>
+
+    <button class="btn primary">
+        <a href="/dashboard">Go to Dashboard</a>
+    </button>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-title {
+    color: khaki;
+    margin: 10px 30px;
+}
+
+.chart-wrapper {
+    margin: 0 30px;
+    background: #1c1f24;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+canvas {
+    width: 100%;
+}
+
+.action-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 10px 22px;
+    border-radius: 20px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn a {
+    color: white;
+    text-decoration: none;
+}
+
+.btn.primary {
+    background: #4c5cff;
+}
+
+.btn.secondary {
+    background: #e6004c;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('myChart').getContext('2d');
+
+const chartData = {
+    labels: [],
+    datasets: []
+};
+
+const myChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: {
+        responsive: true,
+        animation: false,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Time'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Value'
+                }
+            }
+        }
+    }
+});
+
+// Store datasets by parameter name
+const datasetMap = {};
+
+function updateGraph() {
+    fetch("/api/graph-data")
+        .then(res => res.json())
+        .then(data => {
+            if (!data.length) return;
+
+            const timeLabel = data[0].time;
+            chartData.labels.push(timeLabel);
+
+            if (chartData.labels.length > 20) {
+                chartData.labels.shift();
+            }
+
+            data.forEach(item => {
+                if (!datasetMap[item.name]) {
+                    datasetMap[item.name] = {
+                        label: item.name,
+                        data: [],
+                        borderWidth: 2,
+                        fill: false
+                    };
+                    chartData.datasets.push(datasetMap[item.name]);
+                }
+
+                datasetMap[item.name].data.push(item.value);
+
+                if (datasetMap[item.name].data.length > 20) {
+                    datasetMap[item.name].data.shift();
+                }
+            });
+
+            myChart.update();
+        });
+}
+
+// Update every 2 seconds
+setInterval(updateGraph, 2000);
+</script>
+{% endblock %}
