@@ -37,15 +37,28 @@ write_api = influx_client.write_api(write_options=SYNCHRONOUS)
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
 
+# ================= VERCEL DETECT =================
+IS_VERCEL = os.environ.get("VERCEL") == "1" or os.environ.get("VERCEL") is not None
+
 # ================= DATABASE =================
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db' #DATA BASE FOR USERS
+if IS_VERCEL:
+    db_path = "/tmp/users.db"
+else:
+    db_path = "users.db"
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}' #DATA BASE FOR USERS
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # ================= FOLDERS =================
-UPLOAD_FOLDER = "uploads"
-DATA_FOLDER = "data_logs"
-LOG_FOLDER = "logs"
+if IS_VERCEL:
+    UPLOAD_FOLDER = "/tmp/uploads"
+    DATA_FOLDER = "/tmp/data_logs"
+    LOG_FOLDER = "/tmp/logs"
+else:
+    UPLOAD_FOLDER = "uploads"
+    DATA_FOLDER = "data_logs"
+    LOG_FOLDER = "logs"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -60,12 +73,15 @@ log_file = os.path.join(LOG_FOLDER, "app.log")
 for h in list(app.logger.handlers):
     app.logger.removeHandler(h)
 
-handler = RotatingFileHandler(
-    log_file,
-    maxBytes=10 * 1024 * 1024,   # 10 MB
-    backupCount=5,
-    delay=True
-)
+if IS_VERCEL:
+    handler = logging.StreamHandler()
+else:
+    handler = RotatingFileHandler(
+        log_file,
+        maxBytes=10 * 1024 * 1024,   # 10 MB
+        backupCount=5,
+        delay=True
+    )
 handler.setFormatter(logging.Formatter(
     "%(asctime)s | %(levelname)s | %(message)s"
 ))
